@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="pl" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Archeoreplica — wersja pokazowa</title>
+<meta name="description" content="Wersja pokazowa nowej, animowanej strony Archeoreplica. Projekt koncepcyjny — nie jest to oficjalna strona firmy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aleo:wght@400;600;700&family=Cabin:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/archeo.css?v=2">
+<link rel="icon" href="media/img/logo.png">
+</head>
+<body>
+
+<div class="demo-bar" role="note">Wersja pokazowa — projekt koncepcyjny nowej strony. Oficjalna strona: <a href="https://www.archeoreplica.com" target="_blank" rel="noopener">archeoreplica.com</a></div>
+
+<!-- Miernik głębokości (łata miernicza) -->
+<aside class="depth" aria-hidden="true">
+  <div class="depth__rod"><div class="depth__fill"></div></div>
+  <div class="depth__read"><b class="depth__m">0,0</b><small>m</small></div>
+  <div class="depth__era">współczesność</div>
+</aside>
+
+<canvas class="dust" aria-hidden="true"></canvas>
+<div class="brush" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="top__logo" href="#start" aria-label="Archeoreplica — strona główna"><img src="media/img/logo.png" alt="Archeoreplica"></a>
+  <nav class="top__nav" aria-label="Główne">
+    <a href="#o-nas">O nas</a>
+    <a href="#oferta">Oferta</a>
+    <a href="#inwestor">Dla inwestora</a>
+    <a href="#eksperyment">Archeologia eksperymentalna</a>
+    <a href="#repliki">Repliki</a>
+    <a href="#edukacja">Edukacja</a>
+    <a href="#kontakt">Kontakt</a>
+  </nav>
+  <a class="btn btn--dark top__call" href="tel:+48604593263">Zadzwoń</a>
+  <button class="top__burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  <div class="top__progress" aria-hidden="true"></div>
+</header>
+
+<main>
+
+<!-- ═════ HERO ═════ -->
+<section class="hero" id="start" data-era="współczesność" data-depth="0">
+  <div class="hero__media">
+    <img class="hero__poster" src="media/img/hero.webp" alt="Wykopaliska archeologiczne w centrum miasta">
+    <video class="hero__video" muted loop playsinline preload="none" poster="media/img/hero.webp" data-src="media/video/hero.mp4"></video>
+  </div>
+  <canvas class="hero__soil" aria-hidden="true"></canvas>
+  <div class="hero__shade"></div>
+  <div class="hero__content">
+    <p class="kicker reveal">Firma archeologiczna · od 2010 roku · Dolny Śląsk i Opolszczyzna</p>
+    <h1 class="hero__title split">Odkrywamy historię zapisaną pod&nbsp;ziemią</h1>
+    <p class="hero__lead reveal">Nadzory i badania archeologiczne przy inwestycjach, archeologia eksperymentalna, repliki zabytków i edukacja — prowadzone przez archeologów z pasją.</p>
+    <div class="hero__cta reveal">
+      <a class="btn btn--light" href="#inwestor">Zapytaj o nadzór</a>
+      <a class="btn btn--ghost" href="#edukacja">Oferta edukacyjna</a>
+    </div>
+  </div>
+  <p class="hero__hint" aria-hidden="true"><span class="hero__hint-ico"></span>Przeciągnij pędzlem, aby odkopać zdjęcie</p>
+  <a class="hero__down" href="#o-nas" aria-label="Przewiń w dół"><span></span></a>
+</section>
+
+<!-- ═════ O NAS ═════ -->
+<section class="layer layer--sand" id="o-nas" data-era="nowożytność" data-depth="0.6">
+  <svg class="stratum" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 C 180 10, 360 70, 540 38 S 900 8, 1080 42 S 1320 70, 1440 30 L1440 0 L0 0 Z"/></svg>
+  <div class="wrap about">
+    <div class="about__text">
+      <p class="kicker reveal">O nas</p>
+      <h2 class="h2 split">Archeolodzy, którzy wchodzą do wykopu razem z&nbsp;inwestycją</h2>
+      <p class="reveal">Archeoreplica od 2010 roku prowadzi nadzory i badania archeologiczne przy inwestycjach na Dolnym Śląsku. Inwestor otrzymuje wsparcie obejmujące sprawdzenie działki, formalności konserwatorskie, obecność archeologa przy robotach ziemnych, dokumentację znalezisk oraz opracowanie zabytków.</p>
+      <p class="reveal">Działamy jako pośrednicy przy uzyskaniu zezwoleń konserwatorskich, a po zakończeniu prac opracowujemy materiał. Obsługujemy zarówno duże firmy, jak i klientów indywidualnych — budowy mieszkaniowe, przemysłowe i infrastrukturalne.</p>
+      <ul class="stats">
+        <li class="reveal"><b data-count="2010" data-plain>2010</b><span>działamy od roku</span></li>
+        <li class="reveal"><b data-count="2">2</b><span>województwa: dolnośląskie i opolskie</span></li>
+        <li class="reveal"><b data-count="10" data-prefix="~">~10</b><span>lat eksperymentów z kością i porożem</span></li>
+        <li class="reveal"><b data-count="4">4</b><span>rodzaje mikroskopów w analizach</span></li>
+      </ul>
+    </div>
+    <figure class="about__media dig">
+      <video muted loop playsinline preload="none" poster="media/img/archeolog.webp" data-src="media/video/archeolog.mp4"></video>
+      <img src="media/img/archeolog.webp" alt="Archeolog w wykopie z łatą mierniczą">
+      <figcaption>Profil wykopu — dokumentujemy każdą warstwę</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ═════ OFERTA ═════ -->
+<section class="layer layer--clay" id="oferta" data-era="średniowiecze" data-depth="1.4">
+  <svg class="stratum" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 C 240 70, 420 0, 720 40 S 1200 70, 1440 20 L1440 0 L0 0 Z"/></svg>
+  <div class="wrap">
+    <p class="kicker reveal">Oferta</p>
+    <h2 class="h2 split">Sześć sposobów, w&nbsp;jakie pracujemy z&nbsp;przeszłością</h2>
+    <div class="cards">
+      <article class="card dig" data-href="https://www.archeoreplica.com/uslugi-archeologiczne/nadzory-archeologiczne">
+        <div class="card__media"><img src="media/img/k-nadzory.webp" alt="Obiekt archeologiczny odsłonięty w wykopie"></div>
+        <div class="card__body"><h3>Nadzory archeologiczne</h3><p>Obecność archeologa przy robotach ziemnych, obserwacja warstw w profilu i rzucie wykopu, dokumentacja opisowa i fotograficzna.</p><span class="card__more">Czytaj więcej</span></div>
+      </article>
+      <article class="card dig" data-href="https://www.archeoreplica.com/uslugi-archeologiczne/badania-archeologiczne">
+        <div class="card__media"><img src="media/img/k-badania.webp" alt="Fragmenty ceramiki na dłoni"><video muted loop playsinline preload="none" data-src="media/video/ceramika.mp4"></video></div>
+        <div class="card__body"><h3>Badania archeologiczne</h3><p>Badania wraz z dokumentacją reliktów i znalezisk — zakres dopasowany do decyzji konserwatorskiej i rodzaju gruntu.</p><span class="card__more">Czytaj więcej</span></div>
+      </article>
+      <article class="card dig" data-href="https://www.archeoreplica.com/edukacja-archeologiczna">
+        <div class="card__media"><img src="media/img/k-edukacja.webp" alt="Kamienne żarno z ziarnem"><video muted loop playsinline preload="none" data-src="media/video/zarno.mp4"></video></div>
+        <div class="card__body"><h3>Edukacja archeologiczna</h3><p>Lekcje, warsztaty, pokazy i festyny. Uczestnicy dotykają replik i sami próbują dawnych technik.</p><span class="card__more">Czytaj więcej</span></div>
+      </article>
+      <article class="card dig card--loupe" data-href="https://www.archeoreplica.com/badania-naukowe">
+        <div class="card__media"><img src="media/img/k-naukowe.webp" alt="Powierzchnia kamienia pod mikroskopem"><span class="loupe" aria-hidden="true"></span></div>
+        <div class="card__body"><h3>Badania naukowe</h3><p>Publikacje i analizy traseologiczne. Najedź na zdjęcie — zobacz, co widzi archeolog pod mikroskopem.</p><span class="card__more">Czytaj więcej</span></div>
+      </article>
+      <article class="card dig" data-href="https://www.archeoreplica.com/archeologia-eksperymentalna">
+        <div class="card__media"><img src="media/img/k-ae.webp" alt="Narzędzie z drewna w mule"><video muted loop playsinline preload="none" data-src="media/video/drewno.mp4"></video></div>
+        <div class="card__body"><h3>Archeologia eksperymentalna</h3><p>Odtwarzamy dawne technologie krok po kroku, by zrozumieć funkcję i sposób wykonania zabytków.</p><span class="card__more">Czytaj więcej</span></div>
+      </article>
+      <article class="card dig" data-href="https://www.archeoreplica.com/repliki-zabytkow">
+        <div class="card__media"><img src="media/img/k-repliki.webp" alt="Repliki narzędzi z kości i poroża na futrze"><video muted loop playsinline preload="none" data-src="media/video/ostrza.mp4"></video></div>
+        <div class="card__body"><h3>Repliki zabytków</h3><p>Wyroby z kości i poroża wykonywane ręcznie, narzędziami i technikami z danej epoki.</p><span class="card__more">Czytaj więcej</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ DLA INWESTORA ═════ -->
+<section class="layer layer--loam" id="inwestor" data-era="średniowiecze" data-depth="2.0">
+  <svg class="stratum" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0 50 C 300 10, 520 60, 760 30 S 1180 0, 1440 44 L1440 0 L0 0 Z"/></svg>
+  <div class="wrap">
+    <p class="kicker reveal">Dla inwestora</p>
+    <h2 class="h2 split">Jak przebiega współpraca przy budowie</h2>
+    <p class="lead reveal">Zaczynamy od analizy dokumentów planistycznych, danych archiwalnych i skali robót ziemnych. Dokumentację prowadzimy równolegle z pracami terenowymi — przy odkryciu reliktu reagujemy na miejscu.</p>
+    <ol class="steps">
+      <svg class="steps__line" viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true"><path d="M20 60 C 180 10, 300 110, 500 60 S 820 10, 980 60"/></svg>
+      <li class="reveal"><span class="steps__n">1</span><h3>Analiza</h3><p>Ewidencja, mapy i decyzje administracyjne dotyczące działki.</p></li>
+      <li class="reveal"><span class="steps__n">2</span><h3>Wniosek</h3><p>Przygotowanie wniosku i uzgodnień konserwatorskich.</p></li>
+      <li class="reveal"><span class="steps__n">3</span><h3>Nadzór</h3><p>Archeolog przy robotach ziemnych i rejestracja odkryć.</p></li>
+      <li class="reveal"><span class="steps__n">4</span><h3>Raport</h3><p>Opracowanie materiałów, raport i konserwacja zabytków.</p></li>
+    </ol>
+
+    <div class="quiz reveal" id="kreator">
+      <div class="quiz__head">
+        <p class="kicker">Kreator · 30 sekund</p>
+        <h3>Czy Twoja inwestycja może wymagać archeologa?</h3>
+        <div class="quiz__bar"><span></span></div>
+      </div>
+      <div class="quiz__stage" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ NAMIOT — PASMO ═════ -->
+<section class="band" data-era="epoka żelaza" data-depth="2.6">
+  <div class="band__media">
+    <img src="media/img/namiot.webp" alt="Rekonstrukcja namiotu ze skór na wystawie">
+    <video muted loop playsinline preload="none" poster="media/img/namiot.webp" data-src="media/video/namiot.mp4"></video>
+  </div>
+  <canvas class="band__embers" aria-hidden="true"></canvas>
+  <div class="band__text">
+    <h2 class="split">Archeolodzy z pasją i doświadczeniem!</h2>
+    <p class="reveal">Rekonstrukcje, wystawy i pokazy — przeszłość, którą można zobaczyć z bliska.</p>
+  </div>
+</section>
+
+<!-- ═════ ARCHEOLOGIA EKSPERYMENTALNA ═════ -->
+<section class="layer layer--iron" id="eksperyment" data-era="epoka brązu" data-depth="3.0">
+  <div class="wrap ae">
+    <figure class="ae__media dig">
+      <video muted loop playsinline preload="none" poster="media/img/g31-63.webp" data-src="media/video/siekiera.mp4"></video>
+      <img src="media/img/g31-63.webp" alt="Rąbanie brzozy repliką siekiery">
+      <figcaption>Eksperyment: replika siekiery w pracy</figcaption>
+    </figure>
+    <div class="ae__text">
+      <p class="kicker reveal">Archeologia eksperymentalna</p>
+      <h2 class="h2 split">Sprawdzamy, jak naprawdę działały dawne narzędzia</h2>
+      <p class="reveal">Od niemal 10 lat prowadzimy badania eksperymentalne związane z technologią obróbki kości i poroża. Każdy eksperyment poprzedza analiza pod mikroskopami stereoskopowymi, metalograficznymi, cyfrowymi i skaningowymi — a każde doświadczenie powtarzamy kilkukrotnie.</p>
+      <div class="scope reveal">
+        <p class="scope__label">Pod mikroskopem — przesuń kursorem lub palcem</p>
+        <div class="scope__row">
+          <div class="scope__img"><img src="media/img/g24-54.webp" alt="Ślady użytkowania pod mikroskopem, skala 100 µm"></div>
+          <div class="scope__img"><img src="media/img/g24-55.webp" alt="Powierzchnia kości pod mikroskopem"></div>
+          <div class="scope__img"><img src="media/img/g24-50.webp" alt="Mikroślady na powierzchni narzędzia"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="strip" aria-label="Galeria eksperymentów">
+    <div class="strip__track" data-gallery="ae"></div>
+  </div>
+</section>
+
+<!-- ═════ REPLIKI ═════ -->
+<section class="layer layer--bone" id="repliki" data-era="neolit" data-depth="3.4">
+  <svg class="stratum" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0 26 C 260 66, 480 6, 720 46 S 1160 16, 1440 50 L1440 0 L0 0 Z"/></svg>
+  <div class="wrap">
+    <p class="kicker reveal">Repliki zabytków</p>
+    <h2 class="h2 split">Zgadnij, co to za przedmiot</h2>
+    <p class="lead reveal">Wszystkie repliki wykonujemy własnoręcznie, narzędziami i technikami z danej epoki — od epoki kamienia po czasy nowożytne. Sprawdź, czy rozpoznasz je bez podpisu.</p>
+    <div class="guess" aria-live="polite"></div>
+  </div>
+  <div class="strip strip--light" aria-label="Galeria replik">
+    <div class="strip__track" data-gallery="repliki"></div>
+  </div>
+</section>
+
+<!-- ═════ EDUKACJA ═════ -->
+<section class="layer layer--meadow" id="edukacja" data-era="neolit" data-depth="3.6">
+  <svg class="stratum" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0 44 C 220 6, 520 70, 760 30 S 1220 60, 1440 24 L1440 0 L0 0 Z"/></svg>
+  <div class="wrap">
+    <p class="kicker reveal">Edukacja archeologiczna</p>
+    <h2 class="h2 split">Lekcje, warsztaty, pokazy i wystawy</h2>
+    <div class="eras reveal" role="tablist" aria-label="Epoki">
+      <button role="tab" aria-selected="true" data-era-tab="kamien">Epoka kamienia</button>
+      <button role="tab" aria-selected="false" data-era-tab="braz">Epoka brązu</button>
+      <button role="tab" aria-selected="false" data-era-tab="zelazo">Epoka żelaza</button>
+      <button role="tab" aria-selected="false" data-era-tab="tematyczne">Zajęcia tematyczne</button>
+    </div>
+    <p class="eras__out reveal" aria-live="polite"></p>
+    <div class="tabs reveal" role="tablist" aria-label="Rodzaj zajęć">
+      <button role="tab" aria-selected="true" data-tab="lekcje">Lekcje i warsztaty</button>
+      <button role="tab" aria-selected="false" data-tab="pokazy">Pokazy i festyny</button>
+      <button role="tab" aria-selected="false" data-tab="wystawy">Wystawy</button>
+      <span class="tabs__ink" aria-hidden="true"></span>
+    </div>
+    <p class="tabs__desc" aria-live="polite"></p>
+    <div class="mosaic" data-mosaic></div>
+  </div>
+</section>
+
+<!-- ═════ WYKOPALISKA — GALERIA ═════ -->
+<section class="layer layer--gravel" id="wykopaliska" data-era="paleolit" data-depth="3.8">
+  <div class="wrap">
+    <p class="kicker reveal">Z naszych wykopów</p>
+    <h2 class="h2 split">Nadzory i badania w terenie</h2>
+    <div class="mosaic mosaic--dense" data-mosaic-static="teren"></div>
+  </div>
+</section>
+
+<!-- ═════ KONTAKT ═════ -->
+<section class="contact" id="kontakt" data-era="calec — dno wykopu" data-depth="4.2">
+  <div class="contact__bg"><img src="media/img/piasek.webp" alt=""></div>
+  <div class="wrap contact__grid">
+    <div>
+      <p class="kicker reveal">Kontakt</p>
+      <h2 class="h2 split">Dotarłeś do dna wykopu. Porozmawiajmy.</h2>
+      <p class="reveal">Działamy przede wszystkim na terenie województwa dolnośląskiego i opolskiego.</p>
+      <ul class="contact__list reveal">
+        <li><b>Telefon</b><a href="tel:+48604593263">+48 604 593 263</a></li>
+        <li><b>Stary Górnik</b>ul. Oławska 7, 55-200 (gmina Oława)</li>
+        <li><b>Wrocław</b>ul. Białowieska 12, 54-234</li>
+        <li><b>Godziny</b>poniedziałek–piątek, 8:00–18:00</li>
+      </ul>
+    </div>
+    <form class="form reveal" novalidate>
+      <label>Temat
+        <select name="temat">
+          <option>Nadzór archeologiczny</option>
+          <option>Badania archeologiczne</option>
+          <option>Lekcje i warsztaty</option>
+          <option>Pokazy i festyny</option>
+          <option>Wystawy</option>
+          <option>Repliki zabytków</option>
+          <option>Inne</option>
+        </select>
+      </label>
+      <label>Imię i nazwisko<input name="imie" autocomplete="name"></label>
+      <label>Telefon lub e-mail<input name="kontakt" autocomplete="email"></label>
+      <label>Wiadomość<textarea name="tresc" rows="4"></textarea></label>
+      <button class="btn btn--dark" type="submit">Wyślij zapytanie</button>
+      <p class="form__note" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <img src="media/img/logo.png" alt="Archeoreplica" class="foot__logo">
+  <p>Wersja pokazowa · projekt koncepcyjny animowanej strony · zdjęcia i teksty: archeoreplica.com · krótkie animacje zdjęć wygenerowane przez AI (Kling)</p>
+</footer>
+
+<a class="sticky-cta" href="#kreator">Zapytaj o nadzór</a>
+
+<div class="lb" role="dialog" aria-modal="true" aria-label="Powiększone zdjęcie" hidden>
+  <button class="lb__x" aria-label="Zamknij">×</button>
+  <button class="lb__p" aria-label="Poprzednie">‹</button>
+  <img alt="">
+  <button class="lb__n" aria-label="Następne">›</button>
+</div>
+
+<script src="assets/archeo.js?v=2" defer></script>
+</body>
+</html>
