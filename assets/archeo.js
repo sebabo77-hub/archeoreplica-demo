@@ -10,6 +10,14 @@
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var IMG = 'media/img/';
 
+  /* ── intro: naczynie składa się z fragmentu (raz na sesję) ── */
+  var intro = $('.intro'), seen = false, T = 0;
+  try { seen = sessionStorage.getItem('ar-intro') === '1'; sessionStorage.setItem('ar-intro', '1'); } catch (e) {}
+  if (intro) {
+    if (reduce || seen) intro.remove();
+    else { T = 2100; document.documentElement.style.overflow = 'hidden'; setTimeout(function () { intro.classList.add('done'); document.documentElement.style.overflow = ''; setTimeout(function () { intro.remove(); }, 800); }, T); }
+  }
+
   /* ── dane galerii ── */
   function range(p, a, b, skip) { var o = []; for (var i = a; i <= b; i++) if (!skip || skip.indexOf(i) < 0) o.push(IMG + p + '-' + i + '.webp'); return o; }
   var G = {
@@ -47,7 +55,7 @@
   }, { threshold: .18, rootMargin: '0px 0px -6% 0px' });
   function watch(root) { $$('.reveal,.split,.dig,.stratum,.mosaic figure,[data-count]', root).forEach(function (el) { if (!el.classList.contains('in')) io.observe(el); }); }
   watch(document);
-  $('.hero .split') && setTimeout(function () { $$('.hero .split,.hero .reveal').forEach(function (e) { e.classList.add('in'); }); }, 250);
+  $('.hero .split') && setTimeout(function () { $$('.hero .split,.hero .reveal').forEach(function (e) { e.classList.add('in'); }); }, T + 250);
 
   /* ── liczniki ── */
   function count(b) {
@@ -157,7 +165,7 @@
       if (++t >= 14) { t = 0; k++; }
       requestAnimationFrame(auto);
     }
-    setTimeout(auto, 500);
+    setTimeout(auto, T + 500);
     var last = null;
     c.addEventListener('pointermove', function (e) {
       if (done) return; var r = c.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
@@ -166,7 +174,7 @@
       if (Math.random() < .25) puff(e.clientX, e.clientY, 2);
     });
     c.addEventListener('pointerleave', function () { last = null; });
-    setTimeout(function () { finish(1800); }, fine ? 9000 : 4200);
+    setTimeout(function () { finish(1800); }, T + (fine ? 9000 : 4200));
     addEventListener('scroll', function () { if (scrollY > innerHeight * .3) finish(600); }, { passive: true });
   })();
 
