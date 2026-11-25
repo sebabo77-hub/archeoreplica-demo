@@ -1,0 +1,60 @@
+/* Archeoreplica — podstrony usług. Dziedziczy paletę, fonty, przyciski, warstwy i karuzele z archeo.css. */
+.sub-hero{position:relative;min-height:min(78vh,720px);display:flex;align-items:flex-end;overflow:hidden;color:#fff;background:#3a2618}
+.sub-hero__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.06);animation:subkb 26s ease-in-out infinite alternate}
+@keyframes subkb{to{transform:scale(1.16) translate(-1.2%,-1%)}}
+.sub-hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s}
+.sub-hero__video.on{opacity:1}
+.sub-hero__shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(28,16,9,.25) 0%,rgba(28,16,9,.35) 40%,rgba(28,16,9,.86) 100%)}
+.sub-hero__in{padding:clamp(120px,18vh,200px) 0 clamp(40px,7vh,80px)}
+.sub-hero h1{margin:14px 0 16px;max-width:16ch;font:700 clamp(38px,6.2vw,84px)/1.04 var(--fd);letter-spacing:-.01em;text-wrap:balance}
+.sub-hero__lead{max-width:62ch;margin:0 0 26px;font-size:clamp(17px,1.5vw,20px);color:#f3e7d6}
+.crumbs{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font:600 14px var(--fb)}
+.crumbs a{color:#f1dcc0;text-decoration:none}
+.crumbs a:hover{text-decoration:underline}
+.crumbs b{color:#fff;font-weight:700}
+.crumbs span{opacity:.6}
+
+.sub-body .wrap{display:grid;gap:clamp(34px,5vw,64px)}
+.sub-body .wrap>.h2{margin-bottom:0}
+.sub-block{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(22px,4vw,56px);align-items:center}
+.sub-block--flip .sub-block__img{order:2}
+.sub-block:not(:has(.sub-block__img)){grid-template-columns:1fr}
+.sub-block__img{margin:0;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/3;background:#5a4030}
+.sub-block__img img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.8,.2,1)}
+.sub-block:hover .sub-block__img img{transform:scale(1.05)}
+.sub-block__txt h2{margin:0 0 14px;font:600 clamp(26px,3vw,40px)/1.14 var(--fd);color:var(--brown2);text-wrap:balance}
+.sub-block__txt p{margin:0 0 14px;max-width:68ch;font-size:18px}
+.sub-block__txt ul{margin:0;padding-left:20px;display:grid;gap:8px;max-width:68ch;font-size:17px}
+.sub-block__txt li::marker{color:var(--red)}
+
+.sub-others{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;margin-top:26px}
+.sub-other{position:relative;display:block;border-radius:var(--r);overflow:hidden;aspect-ratio:4/5;text-decoration:none;color:#fff;box-shadow:var(--shadow);background:#3a2618}
+.sub-other img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+.sub-other::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(28,16,9,0) 35%,rgba(28,16,9,.85) 100%)}
+.sub-other span{position:absolute;z-index:1;left:14px;right:14px;bottom:14px;font:600 19px/1.2 var(--fd)}
+.sub-other:hover img{transform:scale(1.08)}
+
+.sub-cta{position:relative;padding:clamp(70px,10vw,130px) 0;background:var(--brown2);color:#f6e5d2;text-align:center}
+.sub-cta .wrap{display:grid;justify-items:center;gap:14px}
+.sub-cta h2{margin:0;max-width:18ch;font:700 clamp(30px,4.4vw,56px)/1.08 var(--fd);color:#fff;text-wrap:balance}
+.sub-cta p{margin:0}
+.sub-cta .hero__cta{justify-content:center;margin-top:8px}
+.sub-back{color:var(--gold);font:600 16px var(--fb)}
+.sub .foot__intro{display:inline-block;margin-top:4px}
+
+@media (max-width:900px){
+  .sub-block{grid-template-columns:1fr}
+  .sub-block--flip .sub-block__img{order:0}
+  .sub-others{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sub-other{aspect-ratio:4/3}
+}
+@media (prefers-reduced-motion:reduce){.sub-hero__img{animation:none}}
+
+/* galerie: tylko delikatny ruch, bez filmów (decyzja z 25.11.2026) */
+.mosaic figure img{animation:galdrift 18s ease-in-out infinite alternate}
+.mosaic figure:nth-child(2n) img{animation-name:galdrift2;animation-duration:22s}
+.mosaic figure:nth-child(3n) img{animation-duration:26s;animation-delay:-6s}
+@keyframes galdrift{from{transform:scale(1.02)}to{transform:scale(1.1) translate(-1.5%,-1%)}}
+@keyframes galdrift2{from{transform:scale(1.09) translate(1.5%,1%)}to{transform:scale(1.02)}}
+.sub-block__img img{animation:galdrift 24s ease-in-out infinite alternate}
+@media (prefers-reduced-motion:reduce){.mosaic figure img,.sub-block__img img{animation:none}}

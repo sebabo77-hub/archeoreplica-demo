@@ -14,7 +14,7 @@
   var intro = $('.intro'), seen = false, T = 0;
   try { seen = sessionStorage.getItem('ar-intro') === '1'; sessionStorage.setItem('ar-intro', '1'); } catch (e) {}
   if (intro) {
-    if (reduce || seen) intro.remove();
+    if (reduce || seen || document.documentElement.classList.contains('z-intra')) intro.remove();   // z intra 3D lądujemy od razu w treści
     else { T = 2100; document.documentElement.style.overflow = 'hidden'; setTimeout(function () { intro.classList.add('done'); document.documentElement.style.overflow = ''; setTimeout(function () { intro.remove(); }, 800); }, T); }
   }
 
@@ -66,8 +66,50 @@
   }
 
   /* ── nagłówek, pasek postępu, miernik głębokości ── */
+  /* ── „O nas”: opowieść przypięta do przewijania ── */
+  (function () {
+    var st = $('.story'); if (!st || reduce) return;
+    st.classList.add('story--live');
+    var figs = $$('.story__media figure', st), arts = $$('.story__text article', st), N = figs.length;
+    var edge = $('.story__edge', st), rod = $('.story__rod i', st), num = $('.story__num', st), numB = $('b', num), numS = $('span', num), cnt = $('.story__count b', st);
+    var cur = -1, queued = false;
+    function ease(t) { return t * t * (3 - 2 * t); }
+    function setActive(i) {
+      if (i === cur) return;
+      arts.forEach(function (a, k) { a.classList.toggle('on', k === i); a.classList.toggle('was', k < i); });
+      cnt.textContent = i + 1;
+      num.classList.add('swap');
+      setTimeout(function () { numB.textContent = arts[i].dataset.num; numS.textContent = arts[i].dataset.cap; num.classList.remove('swap'); }, 240);
+      figs.forEach(function (f, k) {                           // film gra tylko w bieżącym rozdziale
+        var v = $('video', f); if (!v) return;
+        if (k === i) { if (!v.src) { v.src = v.dataset.vsrc; v.addEventListener('playing', function () { v.classList.add('on'); }); } v.play().catch(function () {}); }
+        else v.pause();
+      });
+      cur = i;
+    }
+    function upd() {
+      queued = false;
+      var r = st.getBoundingClientRect(), total = st.offsetHeight - innerHeight;
+      if (r.bottom < -200 || r.top > innerHeight + 200) return;
+      var p = Math.min(1, Math.max(0, -r.top / total)), f = Math.min(N - 1e-4, p * N), i = Math.floor(f), t = f - i;
+      var a = i < N - 1 ? ease(Math.min(1, Math.max(0, (t - .42) / .58))) : 0;      // jak daleko wysunęła się następna warstwa
+      figs.forEach(function (fg, k) {
+        var open = k <= i ? 1 : (k === i + 1 ? a : 0), m = $('img', fg), v = $('video', fg);
+        fg.style.clipPath = 'inset(' + ((1 - open) * 100).toFixed(2) + '% 0 0 0)';
+        var sc = 'scale(' + (1.26 - .26 * open + (k === i ? t * .05 : 0)).toFixed(4) + ')';
+        m.style.transform = sc; if (v) v.style.transform = sc;
+      });
+      edge.style.top = ((1 - a) * 100) + '%'; edge.style.opacity = a > .01 && a < .99 ? 1 : 0;
+      rod.style.height = ((1 - p) * 100) + '%';
+      num.style.transform = 'translate3d(0,' + ((.5 - p) * 140).toFixed(1) + 'px,0)';
+      setActive(a > .55 ? i + 1 : i);
+    }
+    function ask() { if (!queued) { queued = true; requestAnimationFrame(upd); } }
+    addEventListener('scroll', ask, { passive: true }); addEventListener('resize', ask); upd();
+  })();
+
   var top = $('.top'), prog = $('.top__progress'), depth = $('.depth'), dm = $('.depth__m'), fill = $('.depth__fill'), eraEl = $('.depth__era');
-  var secs = $$('[data-depth]'), maxD = 4.2, curEra = '', sticky = $('.sticky-cta'), navLinks = $$('.top__nav a');
+  var secs = $$('[data-depth]'), maxD = 4.2, endD = 0, curEra = '', sticky = $('.sticky-cta'), navLinks = $$('.top__nav a');
   function onScroll() {
     var y = scrollY, h = document.documentElement.scrollHeight - innerHeight, mid = y + innerHeight * .5;
     top.classList.toggle('is-small', y > 40);
@@ -76,7 +118,7 @@
     for (var i = 0; i < secs.length; i++) {
       var s = secs[i], t = s.offsetTop, b = t + s.offsetHeight;
       if (mid >= t) { era = s.dataset.era; act = s;
-        var nx = secs[i + 1], d0 = +s.dataset.depth, d1 = nx ? +nx.dataset.depth : maxD;
+        var nx = secs[i + 1], d0 = +s.dataset.depth, d1 = nx ? +nx.dataset.depth : endD;
         d = d0 + (d1 - d0) * Math.min(1, (mid - t) / Math.max(1, b - t)); }
     }
     dm.textContent = d.toFixed(1).replace('.', ',');
@@ -201,7 +243,7 @@
 
   /* ── karty: lekki efekt 3D + przejście do podstrony ── */
   $$('.card').forEach(function (card) {
-    card.addEventListener('click', function () { if (card.dataset.href) open(card.dataset.href, '_blank', 'noopener'); });
+    card.addEventListener('click', function () { if (card.dataset.href) location.href = card.dataset.href; });
     if (!fine || reduce) return;
     card.addEventListener('mousemove', function (e) { var r = card.getBoundingClientRect(), dx = (e.clientX - r.left) / r.width - .5, dy = (e.clientY - r.top) / r.height - .5; card.style.transform = 'perspective(900px) rotateY(' + dx * 7 + 'deg) rotateX(' + (-dy * 7) + 'deg) translateY(-4px)'; });
     card.addEventListener('mouseleave', function () { card.style.transform = ''; });
@@ -265,8 +307,30 @@
   /* ── mozaiki ── */
   function mosaic(box, list) {
     box.innerHTML = '';
-    list.forEach(function (src, i) { var f = document.createElement('figure'), im = new Image(); im.src = src; im.alt = 'Zdjęcie z działalności Archeoreplica'; im.loading = 'lazy'; f.appendChild(im); f.style.transitionDelay = (i % 8) * 60 + 'ms'; f.onclick = function () { lbShow(list, i); }; box.appendChild(f); });
+    list.forEach(function (src, i) { var f = document.createElement('figure'), im = new Image(); im.src = src; im.alt = 'Zdjęcie z działalności Archeoreplica'; im.loading = 'lazy'; f.appendChild(im); f.style.transitionDelay = (i % 8) * 60 + 'ms'; f.onclick = function () { if (box._dragged) return; lbShow(list, i); }; box.appendChild(f); });
+    box.scrollLeft = 0; carousel(box);
     watch(box);
+  }
+  /* galeria jako karuzela: przeciąganie kursorem, palec (natywnie), strzałki na ekranie i na klawiaturze */
+  function carousel(box) {
+    if (box._car) { box._car(); return; } 
+    var nav = document.createElement('div'); nav.className = 'car__nav';
+    nav.innerHTML = '<button type="button" class="car__btn" aria-label="Poprzednie zdjęcia">←</button><button type="button" class="car__btn" aria-label="Następne zdjęcia">→</button><span class="car__hint">Przeciągnij zdjęcia w lewo lub w prawo</span>';
+    box.parentNode.insertBefore(nav, box.nextSibling);
+    var prev = nav.children[0], next = nav.children[1];
+    function step(dir) { box.scrollBy({ left: dir * Math.max(260, box.clientWidth * .8), behavior: reduce ? 'auto' : 'smooth' }); }
+    function state() { prev.disabled = box.scrollLeft < 4; next.disabled = box.scrollLeft > box.scrollWidth - box.clientWidth - 4; }
+    prev.onclick = function () { step(-1); }; next.onclick = function () { step(1); };
+    box.addEventListener('scroll', state, { passive: true });
+    box.tabIndex = 0; box.setAttribute('role', 'group'); box.setAttribute('aria-label', 'Galeria zdjęć, przewijana w poziomie');
+    box.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') { e.preventDefault(); step(1); } if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); } });
+    var down = false, sx = 0, sl = 0, moved = 0;
+    box.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse' || e.button !== 0) return; down = true; moved = 0; sx = e.clientX; sl = box.scrollLeft; box._dragged = false; });
+    addEventListener('pointermove', function (e) { if (!down) return; var dx = e.clientX - sx; moved = Math.max(moved, Math.abs(dx)); if (moved > 5) { box.classList.add('drag'); box._dragged = true; box.scrollLeft = sl - dx; e.preventDefault(); } });
+    addEventListener('pointerup', function () { if (!down) return; down = false; box.classList.remove('drag'); setTimeout(function () { box._dragged = false; }, 60); });
+    box.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    box._car = function () { setTimeout(state, 50); }; box._car();
+    addEventListener('resize', state);
   }
   $$('[data-mosaic-static]').forEach(function (b) { mosaic(b, G[b.dataset.mosaicStatic]); });
   var eduBox = $('[data-mosaic]'), ink = $('.tabs__ink'), desc = $('.tabs__desc');

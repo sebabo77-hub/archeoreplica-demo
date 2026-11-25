@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Archeoreplica — zejście w głąb wykopu (próba 3D)</title>
+<meta name="description" content="Próbna scena 3D: zejście w głąb wykopu archeologicznego. Projekt koncepcyjny, nie jest to oficjalna strona firmy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aleo:wght@400;600;700&family=Cabin:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/dig.css?v=9">
+<link rel="icon" href="../demo/media/logo/favicon.svg" type="image/svg+xml">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+
+<canvas id="scena" aria-hidden="true"></canvas>
+<video class="film" id="film" data-src="assets/otwarcie.mp4" muted playsinline preload="auto" aria-hidden="true" style="opacity:0"></video>
+
+<header class="bar">
+  <a class="bar__logo" href="../demo/index.html" aria-label="Archeoreplica, pełna strona">
+    <svg viewBox="0 0 100 120" aria-hidden="true"><path d="M50 8H39L41 24C20 34 8 50 10 64C12 84 24 102 30 112H50L54 104L47 94L55 82L48 70L56 58L49 46L54 34L48 22L52 13Z" fill="currentColor"/><path d="M50 8H61L59 24C80 34 92 50 90 64C88 84 76 102 70 112H54" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><g fill="#b8402e"><circle cx="61" cy="8" r="2.8"/><circle cx="59" cy="24" r="2.8"/><circle cx="90" cy="64" r="2.8"/><circle cx="70" cy="112" r="2.8"/></g></svg>
+    <span>ARCHEO<i>REPLICA</i></span>
+  </a>
+  <nav class="bar__nav" aria-label="Skróty">
+    <a href="../demo/index.html">Pełna strona</a>
+    <a class="bar__tel" href="tel:+48604593263">+48 604 593 263</a>
+  </nav>
+</header>
+
+<!-- Ekran startowy -->
+<section class="start" id="start">
+  <div class="start__load" id="load" role="status" aria-live="polite">
+    <div class="start__rod"><i id="loadFill"></i></div>
+    <span id="loadTxt">Przygotowuję wykop… 0%</span>
+  </div>
+  <div class="start__copy" id="startCopy" hidden>
+    <h1>Odkrywamy historię zapisaną pod ziemią</h1>
+    <p>Sześć warstw, sześć sposobów pracy z przeszłością. Zejdź z nami na dno wykopu.</p>
+    <button class="btn" id="wejdz" type="button">Zejdź w głąb</button>
+  </div>
+</section>
+
+<!-- Duży napis z logo: pokazuje się po kliknięciu „Zejdź w głąb” -->
+<div class="brand" id="brand" aria-hidden="true">
+  <svg class="brand__mark" viewBox="0 0 100 120">
+    <path class="fill" d="M50 8H39L41 24C20 34 8 50 10 64C12 84 24 102 30 112H50L54 104L47 94L55 82L48 70L56 58L49 46L54 34L48 22L52 13Z"/>
+    <path class="draw" pathLength="1" d="M50 8H39L41 24C20 34 8 50 10 64C12 84 24 102 30 112H50L54 104L47 94L55 82L48 70L56 58L49 46L54 34L48 22L52 13Z"/>
+    <path class="draw" pathLength="1" d="M50 8H61L59 24C80 34 92 50 90 64C88 84 76 102 70 112H54"/>
+    <path class="draw thin" pathLength="1" d="M54 34H74M56 64H89M54 92H80M59 24C70 50 74 88 63 112"/>
+    <circle class="node" cx="61" cy="8" r="3.2"/><circle class="node" cx="59" cy="24" r="3.2"/><circle class="node" cx="90" cy="64" r="3.2"/><circle class="node" cx="70" cy="112" r="3.2"/>
+  </svg>
+  <div class="brand__name">ARCHEOREPLICA</div>
+  <div class="brand__rod"></div>
+  <p class="brand__tag">badania · rekonstrukcje · edukacja</p>
+</div>
+
+<!-- Miernik głębokości -->
+<aside class="gauge" id="gauge" aria-hidden="true">
+  <b id="gaugeM">0,0 m</b>
+  <span id="gaugeEra">współczesność</span>
+</aside>
+
+<p class="hint" id="hint" aria-hidden="true">Przewijaj, żeby zejść niżej</p>
+
+<!-- Warstwy: treść jest zwykłym HTML, scena 3D tylko ją ilustruje -->
+<main class="stations" id="stations">
+  <article class="st" data-depth="0.6" data-era="nowożytność" data-img="archeolog.webp" data-video="archeolog.mp4" data-side="left">
+    <h2>Nadzory archeologiczne</h2>
+    <p>Obecność archeologa przy robotach ziemnych, obserwacja warstw w profilu i rzucie wykopu, dokumentacja opisowa i fotograficzna.</p>
+  </article>
+  <article class="st" data-depth="1.4" data-era="średniowiecze" data-img="k-badania.webp" data-video="ceramika.mp4" data-side="right">
+    <h2>Badania archeologiczne</h2>
+    <p>Badania wraz z dokumentacją reliktów i znalezisk. Zakres dopasowany do decyzji konserwatorskiej i rodzaju gruntu.</p>
+  </article>
+  <article class="st" data-depth="2.2" data-era="epoka żelaza" data-img="k-naukowe.webp" data-side="left">
+    <h2>Badania naukowe</h2>
+    <p>Publikacje i analizy traseologiczne. Zabytki oglądamy pod mikroskopami stereoskopowymi, metalograficznymi, cyfrowymi i skaningowymi.</p>
+  </article>
+  <article class="st" data-depth="3.0" data-era="epoka brązu" data-img="g31-63.webp" data-video="siekiera.mp4" data-side="right">
+    <h2>Archeologia eksperymentalna</h2>
+    <p>Odtwarzamy dawne technologie krok po kroku, by zrozumieć funkcję i sposób wykonania zabytków.</p>
+  </article>
+  <article class="st" data-depth="3.4" data-era="neolit" data-img="k-repliki.webp" data-video="ostrza.mp4" data-side="left">
+    <h2>Repliki zabytków</h2>
+    <p>Wyroby z kości i poroża wykonywane ręcznie, narzędziami i technikami z danej epoki.</p>
+  </article>
+  <article class="st" data-depth="3.8" data-era="paleolit" data-img="k-edukacja.webp" data-video="zarno.mp4" data-side="right">
+    <h2>Edukacja archeologiczna</h2>
+    <p>Lekcje, warsztaty, pokazy i festyny. Uczestnicy dotykają replik i sami próbują dawnych technik.</p>
+  </article>
+</main>
+
+<!-- Współpraca z inwestorem: karty jadą poziomo razem z przewijaniem -->
+<section class="inv" id="inwestor">
+  <div class="inv__head">
+    <h2>Jak przebiega współpraca przy budowie</h2>
+    <p>Dokumentację prowadzimy równolegle z pracami terenowymi. Przy odkryciu reliktu reagujemy na miejscu.</p>
+  </div>
+  <ol class="inv__track" id="invTrack">
+    <li><video muted loop playsinline preload="none" poster="../demo/media/proces/1-analiza.jpg" data-src="../demo/media/proces/1-analiza.mp4"></video><div class="inv__body"><b>1</b><h3>Analiza działki</h3><p>Sprawdzamy ewidencję, mapy, dane archiwalne i decyzje administracyjne dotyczące działki.</p></div></li>
+    <li><video muted loop playsinline preload="none" poster="../demo/media/proces/2-wniosek.jpg" data-src="../demo/media/proces/2-wniosek.mp4"></video><div class="inv__body"><b>2</b><h3>Wniosek do konserwatora</h3><p>Przygotowujemy wniosek i uzgodnienia konserwatorskie.</p></div></li>
+    <li><video muted loop playsinline preload="none" poster="../demo/media/proces/3-nadzor.jpg" data-src="../demo/media/proces/3-nadzor.mp4"></video><div class="inv__body"><b>3</b><h3>Nadzór archeologiczny</h3><p>Archeolog jest przy robotach ziemnych.</p></div></li>
+    <li><video muted loop playsinline preload="none" poster="../demo/media/proces/4-raport.jpg" data-src="../demo/media/proces/4-raport.mp4"></video><div class="inv__body"><b>4</b><h3>Raport z nadzoru</h3><p>Opracowujemy materiały, raport i konserwację zabytków.</p></div></li>
+  </ol>
+</section>
+
+<!-- Dno wykopu -->
+<section class="end" id="end" aria-hidden="true">
+  <h2>Dotarłeś do dna wykopu.</h2>
+  <p id="endMsg">Za chwilę otworzy się pełna strona Archeoreplica.</p>
+  <div class="end__bar" aria-hidden="true"><i id="endBar"></i></div>
+  <div class="end__links">
+    <a class="btn btn--light" href="../demo/index.html?z=intro">Przejdź teraz</a>
+    <button type="button" id="zostan">Zostań tutaj</button>
+    <button type="button" id="wroc">Wróć na powierzchnię</button>
+  </div>
+  <a class="end__tel" href="tel:+48604593263">+48 604 593 263</a>
+</section>
+
+<!-- Wersja bez 3D: brak WebGL albo włączone „ogranicz ruch” -->
+<section class="plain" id="plain" hidden>
+  <h1>Odkrywamy historię zapisaną pod ziemią</h1>
+  <p id="plainWhy">Ta próbna scena wymaga grafiki 3D w przeglądarce.</p>
+  <a class="btn" href="../demo/index.html">Otwórz stronę bez animacji 3D</a>
+</section>
+
+<p class="note">Wersja pokazowa, próba sceny 3D. Zdjęcia i teksty: archeoreplica.com. Koparka: Wikimedia Commons, CC BY-SA 3.0</p>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script type="module" src="assets/dig.js?v=21"></script>
+</body>
+</html>

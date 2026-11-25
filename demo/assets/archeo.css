@@ -350,3 +350,178 @@ a{color:var(--brown)}
 .no-js .reveal,.no-js .split .w,.no-js .mosaic figure{opacity:1;transform:none}
 .no-js .dig::after,.no-js .hero__soil{display:none}
 @media (prefers-reduced-motion:reduce){.lm--anim .lm-wire{stroke-dashoffset:0}.intro{display:none}}
+
+
+/* ═══════ Zgranie z intrem 3D (25.11.2026) ═══════ */
+/* lądowanie z intra: bez drugiego ekranu startowego, rozjaśnienie z koloru papieru */
+html{background:var(--paper)}
+html.z-intra{scroll-behavior:auto}
+html.z-intra body{animation:land 1s ease both}
+@keyframes land{from{opacity:0}to{opacity:1}}
+
+/* miernik głębokości taki sam jak w intrze: duża liczba przy biało-czerwonej miarce */
+.depth{left:clamp(14px,2.4vw,34px);top:auto;bottom:clamp(18px,4vh,40px);transform:none;flex-direction:column;align-items:flex-start;gap:2px;padding-left:14px;border-left:10px solid transparent;border-image:repeating-linear-gradient(180deg,#fff 0 9px,var(--red) 9px 18px) 1}
+.depth__rod{display:none}
+.depth__read{background:none;box-shadow:none;padding:0;min-width:0;text-align:left;font:700 clamp(30px,3.6vw,46px)/1 var(--fd);color:var(--brown2);text-shadow:0 0 14px var(--paper),0 0 4px var(--paper)}
+.depth__read small{font-size:.5em;margin-left:4px}
+.depth__era{writing-mode:horizontal-tb;transform:none;background:none;box-shadow:none;padding:0;letter-spacing:0;text-transform:none;font:600 15px/1.2 var(--fb);color:var(--brown2);text-shadow:0 0 12px var(--paper),0 0 4px var(--paper)}
+
+/* te same fotograficzne tekstury ziemi co w wykopie, mocno przygaszone */
+.layer::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:url("../../demo-3d/assets/tex/excavated_soil_wall_diffuse.jpg") 0 0/560px;opacity:.14;mix-blend-mode:multiply}
+.layer--sand::after,.layer--bone::after,.layer--meadow::after{background-image:url("../../demo-3d/assets/tex/gravelly_sand_diffuse.jpg");opacity:.13}
+.layer--loam::after{background-image:url("../../demo-3d/assets/tex/castle_brick_broken_06_diffuse.jpg");opacity:.06}
+.layer--iron::after{mix-blend-mode:soft-light;opacity:.3}
+.layer>.wrap,.layer>.strip,.layer>.band{position:relative;z-index:2}
+
+.foot__intro{color:var(--gold);font-weight:600}
+
+/* przekrój wykopu 3D w sekcji „Dla inwestora” */
+.strata3d{position:relative;height:clamp(240px,34vw,400px);margin:34px 0 -8px}
+.strata3d canvas{width:100%;height:100%;display:block}
+.strata3d.no-3d{display:none}
+.strata3d__tag{position:absolute;left:0;top:0;margin:-14px 0 0 12px;padding:6px 12px;border-radius:3px;background:var(--paper);color:var(--brown2);font:700 14px/1 var(--fd);white-space:nowrap;box-shadow:var(--shadow);opacity:.35;transition:opacity .4s,background .4s,color .4s;pointer-events:none}
+.strata3d__tag.is-on{opacity:1;background:var(--brown);color:#fff}
+.steps li{transition:box-shadow .4s,transform .4s}
+.steps li.is-step{box-shadow:0 0 0 2px var(--red),var(--shadow)}
+
+/* replika 3D w sekcji „Repliki” */
+.replika3d{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(20px,4vw,56px);align-items:center;margin:40px 0 56px}
+.replika3d__stage{position:relative;height:clamp(280px,36vw,460px);border-radius:var(--r);background:radial-gradient(ellipse at 50% 60%,#fff8ec 0%,#ecdcc4 62%,#d8c3a3 100%);box-shadow:var(--shadow);overflow:hidden}
+.replika3d__stage canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
+.replika3d__stage canvas:active{cursor:grabbing}
+.replika3d__dot{position:absolute;left:0;top:0;width:22px;height:22px;margin:-11px 0 0 -11px;padding:0;border-radius:50%;border:2px solid #fff;background:var(--red);box-shadow:0 0 0 0 rgba(184,64,46,.5);cursor:pointer;transition:opacity .3s;animation:spot 2.2s ease-out infinite}
+.replika3d__dot.is-on{background:var(--brown2);animation:none;box-shadow:0 0 0 6px rgba(74,41,20,.25)}
+@keyframes spot{to{box-shadow:0 0 0 14px rgba(184,64,46,0)}}
+.replika3d__hint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);margin:0;padding:7px 14px;border-radius:999px;background:rgba(74,41,20,.85);color:var(--paper);font:600 13px var(--fb);pointer-events:none;transition:opacity .4s}
+.replika3d.is-used .replika3d__hint{opacity:0}
+.replika3d__txt h3{margin:0 0 8px;font:600 clamp(22px,2.4vw,30px)/1.15 var(--fd);color:var(--brown2)}
+.replika3d__txt p{margin:0 0 14px}
+.replika3d__txt ul{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.replika3d__txt li button{padding:10px 16px;border-radius:999px;border:2px solid var(--brown);background:transparent;color:var(--brown2);font:600 14px var(--fb);cursor:pointer;transition:background .25s,color .25s}
+.replika3d__txt li button[aria-pressed="true"],.replika3d__txt li button:hover{background:var(--brown);color:#fff}
+.replika3d__out{min-height:3.2em;font-size:17px;color:var(--ink)}
+.replika3d__note{font-size:13px;color:var(--muted)}
+.replika3d.no-3d .replika3d__stage{display:none}
+.replika3d.no-3d{grid-template-columns:1fr}
+@media (max-width:820px){.replika3d{grid-template-columns:1fr}.strata3d__tag{font-size:12px;padding:5px 8px}}
+@media (prefers-reduced-motion:reduce){html.z-intra body{animation:none}.replika3d__dot{animation:none}}
+
+
+/* ═══════ „O nas” jako opowieść przypięta do przewijania (25.11.2026) ═══════ */
+/* Bez skryptu albo przy „ogranicz ruch” rozdziały stoją zwyczajnie jeden pod drugim. */
+.story{padding:clamp(80px,11vw,150px) 0 clamp(60px,8vw,110px)}
+.story__pin{position:relative;z-index:2;width:min(1240px,100% - 40px);margin:0 auto}
+.story__media figure{position:relative;margin:0 0 18px;aspect-ratio:16/10;border-radius:var(--r);overflow:hidden;background:#3a2618}
+.story__media img,.story__media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.story__media video{opacity:0;transition:opacity .8s;z-index:1}
+.story__media video.on{opacity:1}
+.story__num,.story__edge,.story__rod,.story__count{display:none}
+.story__text article{margin:0 0 28px}
+.story__text h2{margin:0 0 14px;max-width:17ch;font:600 clamp(28px,3.4vw,46px)/1.12 var(--fd);color:var(--brown2);text-wrap:balance}
+.story__text article p{margin:0;max-width:46ch;font-size:18px;color:var(--ink)}
+
+.story--live{padding:0;height:560vh}
+.story--live .story__pin{position:sticky;top:0;height:100vh;width:auto;margin:0;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:clamp(24px,5vw,80px);align-items:center;padding:96px max(20px,calc((100% - 1240px)/2)) 36px;overflow:hidden}
+.story--live .story__media{position:relative;height:min(72vh,700px);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);background:#3a2618}
+.story--live .story__media figure{position:absolute;inset:0;margin:0;aspect-ratio:auto;border-radius:0;will-change:clip-path}
+.story--live .story__media img,.story--live .story__media video{will-change:transform}
+/* krawędź wysuwającej się warstwy: falista linia jak granica warstw w profilu */
+.story--live .story__edge{display:block;position:absolute;left:0;right:0;height:34px;margin-top:-17px;z-index:4;pointer-events:none;opacity:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 34' preserveAspectRatio='none'%3E%3Cpath d='M0 17 C 80 2, 150 30, 240 15 S 400 4, 480 19 S 570 26, 600 12 L600 34 L0 34Z' fill='%23efe0c8'/%3E%3Cpath d='M0 17 C 80 2, 150 30, 240 15 S 400 4, 480 19 S 570 26, 600 12' fill='none' stroke='%233a2618' stroke-width='3'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
+.story--live .story__rod{display:block;position:absolute;left:14px;top:14px;bottom:14px;width:10px;z-index:5;border-radius:2px;background:repeating-linear-gradient(180deg,#fff 0 14px,var(--red) 14px 28px);box-shadow:0 0 0 1px rgba(0,0,0,.25),0 6px 16px -6px rgba(0,0,0,.6);overflow:hidden}
+.story--live .story__rod i{position:absolute;left:0;right:0;bottom:0;height:100%;background:rgba(43,26,16,.82)}
+.story--live .story__num{display:block;position:absolute;z-index:0;right:max(10px,calc((100% - 1240px)/2));top:11vh;text-align:right;pointer-events:none;will-change:transform}
+.story--live .story__num b{display:block;font:700 clamp(120px,21vw,330px)/.86 var(--fd);color:transparent;-webkit-text-stroke:2px rgba(107,61,34,.3);letter-spacing:-.03em;transition:opacity .35s}
+.story--live .story__num span{display:block;margin-top:6px;font:600 16px var(--fb);color:var(--brown);transition:opacity .35s}
+.story--live .story__num.swap b,.story--live .story__num.swap span{opacity:0}
+.story--live .story__text{position:relative;z-index:2;height:min(60vh,430px)}
+.story--live .story__text article{position:absolute;left:0;right:0;top:44px;margin:0;opacity:0;pointer-events:none}
+.story--live .story__text article>*{transform:translateY(34px);opacity:0;transition:opacity .5s,transform .8s cubic-bezier(.22,.61,.36,1)}
+.story--live .story__text article p{transition-delay:.12s}
+.story--live .story__text article.on{opacity:1;pointer-events:auto}
+.story--live .story__text article.on>*{transform:none;opacity:1}
+.story--live .story__text article.was>*{transform:translateY(-28px)}
+.story--live .story__count{display:block;position:absolute;left:0;bottom:0;margin:0;font:600 15px var(--fb);color:var(--brown)}
+.story--live .story__count b{font:700 26px var(--fd);color:var(--brown2)}
+@media (max-width:820px){
+  .story--live .story__pin{grid-template-columns:1fr;gap:14px;align-content:start;padding:84px 16px 20px}
+  .story--live .story__media{height:44vh}
+  .story--live .story__text{height:auto;min-height:38vh}
+  .story--live .story__text article{top:34px}
+  .story--live .story__num{top:auto;bottom:11vh;right:10px}
+  .story--live .story__num b{font-size:34vw}
+  .story--live .story__text h2{font-size:26px}
+  .story--live .story__text article p{font-size:16px}
+}
+/* podpis liczby stoi nad nią, żeby nie wchodził w tekst rozdziału */
+.story--live .story__num{display:flex;flex-direction:column-reverse;align-items:flex-end}
+.story--live .story__num span{margin:0 0 2px}
+
+
+/* ═══════ „Dla inwestora”: cztery kroki jako scena przypięta do przewijania (25.11.2026) ═══════ */
+.proc{margin:40px 0 60px}
+.proc__stage{display:none}
+.proc--live{height:460vh;margin:30px 0 40px}
+.proc--live .proc__pin{position:sticky;top:0;height:100vh;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:clamp(20px,3.4vw,54px);align-items:center;padding:92px 0 30px}
+.proc--live .proc__stage{display:block;position:relative;height:min(74vh,720px);border-radius:var(--r);overflow:hidden;box-shadow:0 30px 70px -34px rgba(40,20,8,.75);background:#3a2618}
+.proc--live .proc__stage canvas{width:100%;height:100%;display:block}
+.proc__n{position:absolute;left:22px;bottom:6px;font:700 clamp(90px,13vw,190px)/1 var(--fd);color:rgba(250,241,232,.92);text-shadow:0 10px 40px rgba(0,0,0,.55);pointer-events:none}
+.proc__note{position:absolute;right:14px;bottom:12px;padding:5px 10px;border-radius:999px;background:rgba(43,26,16,.7);color:var(--paper);font:500 12px var(--fb)}
+.proc--live .proc__steps{display:block;margin:0;padding:0 0 0 26px;position:relative}
+.proc--live .proc__steps::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:10px;border-radius:2px;background:repeating-linear-gradient(180deg,#fff 0 14px,var(--red) 14px 28px);box-shadow:0 0 0 1px rgba(0,0,0,.18)}
+.proc--live .proc__steps::after{content:"";position:absolute;left:0;bottom:6px;width:10px;height:calc((1 - var(--proc-p,0)) * (100% - 12px));background:rgba(43,26,16,.8);border-radius:0 0 2px 2px}
+.proc--live .proc__steps li{background:none;box-shadow:none;border-radius:var(--r);padding:14px 16px;margin:0 0 6px;cursor:pointer;opacity:.5;transition:opacity .4s,background .4s,box-shadow .4s}
+.proc--live .proc__steps li .steps__n{display:inline-grid;width:34px;height:34px;font-size:16px;margin:0 10px 0 0;vertical-align:middle;box-shadow:none;background:var(--brown)}
+.proc--live .proc__steps li h3{display:inline;vertical-align:middle;font-size:clamp(19px,1.7vw,24px)}
+.proc--live .proc__steps li p{max-height:0;overflow:hidden;opacity:0;margin:0;font-size:16px;color:var(--ink);transition:max-height .6s cubic-bezier(.22,.61,.36,1),opacity .45s,margin .45s}
+.proc--live .proc__steps li.on{opacity:1;background:var(--paper);box-shadow:var(--shadow)}
+.proc--live .proc__steps li.on .steps__n{background:var(--red)}
+.proc--live .proc__steps li.on p{max-height:12em;opacity:1;margin-top:10px}
+.proc--live .proc__steps li.done{opacity:.8}
+.proc--live .proc__steps li:hover{opacity:1}
+@media (max-width:860px){
+  .proc--live .proc__pin{grid-template-columns:1fr;gap:12px;align-content:start;padding:80px 0 14px}
+  .proc--live .proc__stage{height:40vh}
+  .proc--live .proc__steps li{padding:9px 12px;margin-bottom:2px}
+  .proc--live .proc__steps li p{font-size:15px}
+  .proc__n{font-size:90px}
+}
+.steps h3{text-wrap:balance}
+
+/* pytania inwestorów */
+.faq{margin:10px 0 56px;max-width:860px}
+.faq h3{margin:0 0 16px;font:600 clamp(22px,2.4vw,30px)/1.2 var(--fd);color:var(--brown2)}
+.faq details{border-top:1.5px solid rgba(107,61,34,.3);padding:14px 0}
+.faq details:last-child{border-bottom:1.5px solid rgba(107,61,34,.3)}
+.faq summary{cursor:pointer;font:600 18px/1.35 var(--fb);color:var(--brown2);list-style:none;display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:400 26px/1 var(--fd);color:var(--red);transition:transform .3s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{margin:10px 0 2px;max-width:66ch}
+
+/* miękki cień pod repliką, żeby nie wisiała w powietrzu */
+.replika3d__stage::before{content:"";position:absolute;left:50%;top:58%;width:62%;height:34%;transform:translate(-50%,-10%);background:radial-gradient(ellipse at center,rgba(60,36,16,.38) 0%,rgba(60,36,16,.14) 45%,rgba(60,36,16,0) 70%);pointer-events:none}
+
+
+/* ═══════ Galerie jako karuzele przewijane w poziomie (25.11.2026) ═══════ */
+/* Wcześniej zdjęcia stały w kolumnach jedno pod drugim i sekcja była bardzo długa. */
+.mosaic,.mosaic--dense{columns:auto;display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;padding:8px 2px 16px;margin-right:calc((100% - 100vw) / 2);scroll-snap-type:x proximity;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;cursor:grab;scrollbar-width:thin;scrollbar-color:var(--brown) transparent}
+.mosaic.drag{cursor:grabbing;scroll-snap-type:none;user-select:none}
+.mosaic figure{flex:0 0 auto;margin:0;height:clamp(220px,30vw,380px);scroll-snap-align:start;cursor:inherit}
+.mosaic img{height:100%;width:auto;max-width:none;user-select:none;-webkit-user-drag:none}
+.mosaic::after{content:"";flex:0 0 max(16px,calc((100vw - 100%) / 2))}
+.mosaic:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+.car__nav{display:flex;align-items:center;gap:12px;margin-top:8px;position:relative;z-index:2}
+.car__btn{width:46px;height:46px;border-radius:50%;border:2px solid var(--brown);background:transparent;color:var(--brown2);font:400 22px/1 var(--fb);cursor:pointer;transition:background .25s,color .25s,opacity .25s}
+.car__btn:hover:not(:disabled){background:var(--brown);color:#fff}
+.car__btn:disabled{opacity:.3;cursor:default}
+.car__hint{font:500 14px var(--fb);color:var(--muted)}
+.layer--iron .car__btn{border-color:var(--gold);color:var(--gold)}
+@media (max-width:720px){.mosaic figure{height:clamp(200px,58vw,300px)}}
+
+/* galerie na stronie głównej: delikatny ruch zdjęć (bez filmów) */
+.mosaic figure img{animation:galdrift 18s ease-in-out infinite alternate}
+.mosaic figure:nth-child(2n) img{animation-name:galdrift2;animation-duration:22s}
+.mosaic figure:nth-child(3n) img{animation-duration:26s;animation-delay:-6s}
+@keyframes galdrift{from{transform:scale(1.02)}to{transform:scale(1.1) translate(-1.5%,-1%)}}
+@keyframes galdrift2{from{transform:scale(1.09) translate(1.5%,1%)}to{transform:scale(1.02)}}
+@media (prefers-reduced-motion:reduce){.mosaic figure img{animation:none}}
