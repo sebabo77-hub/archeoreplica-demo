@@ -7,11 +7,12 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const light = document.documentElement.classList.contains('light-scroll');
 const TEX = '../demo-3d/assets/tex/';
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
 function makeRenderer(canvas) {
-  try { const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); r.outputColorSpace = THREE.SRGBColorSpace; return r; }
+  try { const r = new THREE.WebGLRenderer({ canvas, antialias: !light, alpha: true }); r.outputColorSpace = THREE.SRGBColorSpace; return r; }
   catch (e) { return null; }
 }
 function lazy(el, start) {                                    // start() zwraca funkcję klatki (dt, czyWidoczny)
@@ -25,16 +26,23 @@ function lazy(el, start) {                                    // start() zwraca 
 }
 function fit(renderer, camera, canvas) {
   const w = canvas.clientWidth, h = canvas.clientHeight;
-  if (canvas.width !== Math.round(w * renderer.getPixelRatio()) || canvas.height !== Math.round(h * renderer.getPixelRatio())) {
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  const dpr = Math.min(devicePixelRatio, light ? 1.25 : 2);
+  if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+    renderer.setPixelRatio(dpr); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+    return true;
   }
+  return false;
 }
 
 /* ═════════ 1. Replika z poroża ═════════ */
-const rep = document.querySelector('[data-replika]');
-if (rep) lazy(rep, () => {
+export async function startReplica() {
+  const rep = document.querySelector('[data-replika]');
   const canvas = rep.querySelector('canvas'), renderer = makeRenderer(canvas);
-  if (!renderer) { rep.classList.add('no-3d'); return () => {}; }
+  if (!renderer) throw new Error('WebGL niedostępny');
+  const g = await new GLTFLoader().loadAsync('assets/3d/oprawa-z-poroza.glb').catch((error) => {
+    renderer.dispose();
+    throw error;
+  });
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(32, 1, .1, 50);
   camera.position.set(0, 0, 7.2);
   scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), .04).texture;
@@ -43,36 +51,29 @@ if (rep) lazy(rep, () => {
   const rim = new THREE.DirectionalLight('#cfe0ff', 1.1); rim.position.set(4, 2, -4); scene.add(rim);    // chłodna kontra, żeby krawędzie się odcinały
   scene.add(new THREE.HemisphereLight('#ffffff', '#8a6a48', .5));
 
-  // tekstura poroża: plik z generatora obrazów, a gdy go nie ma, wzór liczony w przeglądarce
-  const procTex = () => {
-    const c = document.createElement('canvas'); c.width = c.height = 512; const x = c.getContext('2d');
-    x.fillStyle = '#d9c7a4'; x.fillRect(0, 0, 512, 512);
-    for (let i = 0; i < 900; i++) { x.strokeStyle = `rgba(${90 + Math.random() * 60 | 0},${60 + Math.random() * 40 | 0},${30 + Math.random() * 30 | 0},${.04 + Math.random() * .1})`; x.lineWidth = .6 + Math.random() * 1.6; const px = Math.random() * 512, py = Math.random() * 512, len = 30 + Math.random() * 120; x.beginPath(); x.moveTo(px, py); x.bezierCurveTo(px + len * .3, py + (Math.random() - .5) * 8, px + len * .6, py + (Math.random() - .5) * 8, px + len, py + (Math.random() - .5) * 10); x.stroke(); }
-    for (let i = 0; i < 2600; i++) { x.fillStyle = `rgba(70,45,25,${Math.random() * .16})`; x.beginPath(); x.arc(Math.random() * 512, Math.random() * 512, Math.random() * 1.4, 0, 7); x.fill(); }
-    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2.4, 2.4); t.colorSpace = THREE.SRGBColorSpace; return t;
-  };
-  const antler = new THREE.MeshStandardMaterial({ color: '#ddd4c8', map: procTex(), roughness: .62, metalness: 0, envMapIntensity: .7 });
-  new THREE.TextureLoader().load('assets/3d/porozec-tekstura.jpg', (t) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; antler.map = t; antler.needsUpdate = true; }, undefined, () => {});
-  const core = new THREE.MeshStandardMaterial({ color: '#efe3cb', roughness: .9, metalness: 0, envMapIntensity: .4 });
-  const flint = new THREE.MeshStandardMaterial({ color: '#15171b', roughness: .16, metalness: .1, envMapIntensity: 1.5, flatShading: true });
-
   const pivot = new THREE.Group(); scene.add(pivot);
-  new GLTFLoader().load('assets/3d/oprawa-z-poroza.glb', (g) => {
-    // Model niesie własne tekstury wypalone w Blenderze (kolor, chropowatość, wypukłości); dokładamy zacienienie zagłębień.
-    const tl = new THREE.TextureLoader(), ao = (f) => { const t = tl.load(f); t.flipY = false; return t; };
-    const aoBody = ao('assets/3d/oprawa-ao.jpg'), aoBlade = ao('assets/3d/ostrze-ao.jpg');
-    g.scene.traverse((o) => {
-      if (!o.isMesh) return; const m = o.material, isFlint = m.name === 'krzemien';
-      m.aoMap = isFlint ? aoBlade : aoBody; m.aoMapIntensity = isFlint ? .9 : 1.25; m.envMapIntensity = isFlint ? 1.5 : .5;
-      if (isFlint) { m.color.set('#77777d'); if (m.normalMap) m.normalScale.set(.8, .8); }
-      else {                                                    // kolor z fotograficznej tekstury poroża (Codex); wypalony wzór był zbyt regularny
-        const t = tl.load('assets/3d/porozec-tekstura.jpg'); t.flipY = false; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2.6, 2.6); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
-        m.map = t; m.color.set('#e9dfd0'); if (m.normalMap) m.normalScale.set(.45, .45);
-      }
-      m.needsUpdate = true;
-    });
-    g.scene.position.set(0, 0, .25); pivot.add(g.scene); rep.classList.add('is-ready');
-  }, undefined, () => rep.classList.add('no-3d'));
+  const textureLoader = new THREE.TextureLoader();
+  const loadTexture = (name) => textureLoader.loadAsync('assets/3d/' + name).catch(() => null);
+  const [aoBody, aoBlade, antlerMap] = await Promise.all([
+    loadTexture('oprawa-ao.jpg'), loadTexture('ostrze-ao.jpg'), loadTexture('porozec-tekstura.jpg'),
+  ]);
+  [aoBody, aoBlade, antlerMap].forEach((texture) => { if (texture) texture.flipY = false; });
+  if (antlerMap) {
+    antlerMap.wrapS = antlerMap.wrapT = THREE.RepeatWrapping;
+    antlerMap.repeat.set(2.6, 2.6); antlerMap.colorSpace = THREE.SRGBColorSpace;
+    antlerMap.anisotropy = light ? 2 : 8;
+  }
+  g.scene.traverse((o) => {
+    if (!o.isMesh) return;
+    const m = o.material, isFlint = m.name === 'krzemien', ao = isFlint ? aoBlade : aoBody;
+    if (ao) m.aoMap = ao;
+    m.aoMapIntensity = isFlint ? .9 : 1.25; m.envMapIntensity = isFlint ? 1.5 : .5;
+    if (!isFlint && antlerMap) m.map = antlerMap;
+    m.color.set(isFlint ? '#77777d' : '#e9dfd0');
+    if (m.normalMap) m.normalScale.set(isFlint ? .8 : .45, isFlint ? .8 : .45);
+    m.needsUpdate = true;
+  });
+  g.scene.position.set(0, 0, .25); pivot.add(g.scene);
 
   // obracanie: przeciągnięcie myszą lub palcem w poziomie; pion zostaje dla przewijania strony
   const rot = { x: 1.0, y: -.5, tx: 1.0, ty: -.5 }; let dragging = false, lx = 0, ly = 0, touched = false;
@@ -95,9 +96,10 @@ if (rep) lazy(rep, () => {
   dots.forEach((d) => d.addEventListener('click', () => pick(d.dataset.spotDot)));
 
   const v = new THREE.Vector3();
-  return (dt) => {
-    fit(renderer, camera, canvas);
-    if (!touched && !reduce) rot.ty += dt * .35;                // powolny obrót, dopóki nikt nie dotknął
+  const draw = (dt) => {
+    const resized = fit(renderer, camera, canvas);
+    if (!touched && !light && !reduce) rot.ty += dt * .35;
+    if (!resized && Math.abs(rot.tx - rot.x) + Math.abs(rot.ty - rot.y) < .001 && dt) return;
     rot.x += (rot.tx - rot.x) * Math.min(1, dt * 6); rot.y += (rot.ty - rot.y) * Math.min(1, dt * 6);
     pivot.rotation.set(rot.x, rot.y, 0, 'XYZ');
     renderer.render(scene, camera);
@@ -107,7 +109,10 @@ if (rep) lazy(rep, () => {
       d.style.transform = `translate(${(v.x * .5 + .5) * w}px,${(-v.y * .5 + .5) * h}px)`; d.style.opacity = depth > -.9 ? 1 : .18;
     });
   };
-});
+  draw(0);
+  rep.classList.add('is-ready');
+  lazy(rep, () => draw);
+}
 
 /* ═════════ 2. Przekrój wykopu z krokami współpracy ═════════ */
 const str = document.querySelector('[data-strata]');

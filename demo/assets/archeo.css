@@ -195,7 +195,7 @@ a{color:var(--brown)}
 .scope{margin-top:26px}
 .scope__label{font:600 13px var(--fb);letter-spacing:.1em;text-transform:uppercase;color:var(--gold)!important;margin:0 0 12px}
 .scope__row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.scope__img{position:relative;aspect-ratio:1;border-radius:50%;overflow:hidden;border:3px solid rgba(217,163,90,.6);box-shadow:inset 0 0 30px #000,0 10px 30px -10px #000;touch-action:none}
+.scope__img{position:relative;aspect-ratio:1;border-radius:50%;overflow:hidden;border:3px solid rgba(217,163,90,.6);box-shadow:inset 0 0 30px #000,0 10px 30px -10px #000;touch-action:pan-y}
 .scope__img img{width:100%;height:100%;object-fit:cover;transform:scale(1.6);transition:transform .2s ease-out;transform-origin:50% 50%}
 .scope__img::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 24px 10px rgba(0,0,0,.75);pointer-events:none}
 
@@ -356,7 +356,7 @@ a{color:var(--brown)}
 /* lądowanie z intra: bez drugiego ekranu startowego, rozjaśnienie z koloru papieru */
 html{background:var(--paper)}
 html.z-intra{scroll-behavior:auto}
-html.z-intra body{animation:land 1s ease both}
+html.z-intra body{animation:land 1s ease}
 @keyframes land{from{opacity:0}to{opacity:1}}
 
 /* miernik głębokości taki sam jak w intrze: duża liczba przy biało-czerwonej miarce */
@@ -388,6 +388,11 @@ html.z-intra body{animation:land 1s ease both}
 .replika3d{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(20px,4vw,56px);align-items:center;margin:40px 0 56px}
 .replika3d__stage{position:relative;height:clamp(280px,36vw,460px);border-radius:var(--r);background:radial-gradient(ellipse at 50% 60%,#fff8ec 0%,#ecdcc4 62%,#d8c3a3 100%);box-shadow:var(--shadow);overflow:hidden}
 .replika3d__stage canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
+.replika3d__poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.replika3d.is-ready .replika3d__poster{display:none}
+.replika3d:not(.is-ready) :is(canvas,.replika3d__dot,.replika3d__hint){visibility:hidden}
+.replika3d [data-replika-open][hidden]{display:none}
+.replika3d [data-replika-open]:not([hidden]){margin-bottom:14px}
 .replika3d__stage canvas:active{cursor:grabbing}
 .replika3d__dot{position:absolute;left:0;top:0;width:22px;height:22px;margin:-11px 0 0 -11px;padding:0;border-radius:50%;border:2px solid #fff;background:var(--red);box-shadow:0 0 0 0 rgba(184,64,46,.5);cursor:pointer;transition:opacity .3s;animation:spot 2.2s ease-out infinite}
 .replika3d__dot.is-on{background:var(--brown2);animation:none;box-shadow:0 0 0 6px rgba(74,41,20,.25)}
@@ -401,8 +406,6 @@ html.z-intra body{animation:land 1s ease both}
 .replika3d__txt li button[aria-pressed="true"],.replika3d__txt li button:hover{background:var(--brown);color:#fff}
 .replika3d__out{min-height:3.2em;font-size:17px;color:var(--ink)}
 .replika3d__note{font-size:13px;color:var(--muted)}
-.replika3d.no-3d .replika3d__stage{display:none}
-.replika3d.no-3d{grid-template-columns:1fr}
 @media (max-width:820px){.replika3d{grid-template-columns:1fr}.strata3d__tag{font-size:12px;padding:5px 8px}}
 @media (prefers-reduced-motion:reduce){html.z-intra body{animation:none}.replika3d__dot{animation:none}}
 
@@ -419,9 +422,12 @@ html.z-intra body{animation:land 1s ease both}
 .story__text article{margin:0 0 28px}
 .story__text h2{margin:0 0 14px;max-width:17ch;font:600 clamp(28px,3.4vw,46px)/1.12 var(--fd);color:var(--brown2);text-wrap:balance}
 .story__text article p{margin:0;max-width:46ch;font-size:18px;color:var(--ink)}
+.story:not(.story--live) .story__text figure{position:relative;aspect-ratio:16/10;margin:0 0 16px;border-radius:var(--r);overflow:hidden}
+.story:not(.story--live) .story__text figure img{width:100%;height:100%;object-fit:cover}
+.story:not(.story--live) .story__text figure video{display:none}
 
 .story--live{padding:0;height:560vh}
-.story--live .story__pin{position:sticky;top:0;height:100vh;width:auto;margin:0;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:clamp(24px,5vw,80px);align-items:center;padding:96px max(20px,calc((100% - 1240px)/2)) 36px;overflow:hidden}
+.story--live .story__pin{position:sticky;top:0;height:100svh;width:auto;margin:0;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:clamp(24px,5vw,80px);align-items:center;padding:96px max(20px,calc((100% - 1240px)/2)) 36px;overflow:hidden}
 .story--live .story__media{position:relative;height:min(72vh,700px);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);background:#3a2618}
 .story--live .story__media figure{position:absolute;inset:0;margin:0;aspect-ratio:auto;border-radius:0;will-change:clip-path}
 .story--live .story__media img,.story--live .story__media video{will-change:transform}
@@ -460,8 +466,20 @@ html.z-intra body{animation:land 1s ease both}
 /* ═══════ „Dla inwestora”: cztery kroki jako scena przypięta do przewijania (25.11.2026) ═══════ */
 .proc{margin:40px 0 60px}
 .proc__stage{display:none}
+.proc__photo{display:none}
+.light-scroll .proc__steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+.light-scroll .proc__steps li{box-shadow:none;border:1px solid rgba(107,61,34,.18)}
+.light-scroll .proc__steps .steps__n{box-shadow:none}
+.light-scroll .proc__photo{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:8px;margin-top:12px}
+.light-scroll .dust,.light-scroll .band__embers{display:none}
+.light-scroll .layer::before,.light-scroll .dig::after{display:none}
+.light-scroll .top{background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none}
+html.light-scroll{scroll-padding-block:84px 88px}
+.light-scroll .card{will-change:auto}
+.light-scroll .hero__poster,.light-scroll .contact__bg img,.light-scroll .mosaic figure img{animation:none}
+@media(max-width:560px){.light-scroll .proc__steps{grid-template-columns:1fr}}
 .proc--live{height:460vh;margin:30px 0 40px}
-.proc--live .proc__pin{position:sticky;top:0;height:100vh;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:clamp(20px,3.4vw,54px);align-items:center;padding:92px 0 30px}
+.proc--live .proc__pin{position:sticky;top:0;height:100svh;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:clamp(20px,3.4vw,54px);align-items:center;padding:92px 0 30px}
 .proc--live .proc__stage{display:block;position:relative;height:min(74vh,720px);border-radius:var(--r);overflow:hidden;box-shadow:0 30px 70px -34px rgba(40,20,8,.75);background:#3a2618}
 .proc--live .proc__stage canvas{width:100%;height:100%;display:block}
 .proc__n{position:absolute;left:22px;bottom:6px;font:700 clamp(90px,13vw,190px)/1 var(--fd);color:rgba(250,241,232,.92);text-shadow:0 10px 40px rgba(0,0,0,.55);pointer-events:none}
