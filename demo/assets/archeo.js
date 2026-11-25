@@ -6,8 +6,6 @@
   document.documentElement.classList.remove('no-js');
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
-  var light = reduce || matchMedia('(max-width:860px), (pointer:coarse)').matches;
-  document.documentElement.classList.toggle('light-scroll', light);
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var IMG = 'media/img/';
@@ -70,42 +68,29 @@
   /* ── nagłówek, pasek postępu, miernik głębokości ── */
   /* ── „O nas”: opowieść przypięta do przewijania ── */
   (function () {
-    var st = $('.story'); if (!st) return;
-    var figs = $$('.story__media figure', st), arts = $$('.story__text article', st), N = figs.length;
-    if (light) {
-      figs.forEach(function (fig, i) { arts[i].prepend(fig); });
-      $('.story__media', st).remove();
-      return;
-    }
+    var st = $('.story'); if (!st || reduce) return;
     st.classList.add('story--live');
-    var pin = $('.story__pin', st), videos = figs.map(function (fig) { return $('video', fig); });
+    var figs = $$('.story__media figure', st), arts = $$('.story__text article', st), N = figs.length;
     var edge = $('.story__edge', st), rod = $('.story__rod i', st), num = $('.story__num', st), numB = $('b', num), numS = $('span', num), cnt = $('.story__count b', st);
     var cur = -1, queued = false;
     function ease(t) { return t * t * (3 - 2 * t); }
-    function syncVideos(visible) {
-      videos.forEach(function (v, k) {
-        if (!v) return;
-        if (k !== cur || !visible || document.hidden) { if (!v.paused) v.pause(); return; }
-        if (!v.getAttribute('src')) {
-          v.addEventListener('playing', function () { v.classList.add('on'); }, { once: true });
-          v.src = v.dataset.vsrc;
-        }
-        if (v.paused) v.play().catch(function () {});
-      });
-    }
     function setActive(i) {
       if (i === cur) return;
       arts.forEach(function (a, k) { a.classList.toggle('on', k === i); a.classList.toggle('was', k < i); });
       cnt.textContent = i + 1;
       num.classList.add('swap');
       setTimeout(function () { numB.textContent = arts[i].dataset.num; numS.textContent = arts[i].dataset.cap; num.classList.remove('swap'); }, 240);
+      figs.forEach(function (f, k) {                           // film gra tylko w bieżącym rozdziale
+        var v = $('video', f); if (!v) return;
+        if (k === i) { if (!v.src) { v.src = v.dataset.vsrc; v.addEventListener('playing', function () { v.classList.add('on'); }); } v.play().catch(function () {}); }
+        else v.pause();
+      });
       cur = i;
     }
     function upd() {
       queued = false;
-      var r = st.getBoundingClientRect(), viewport = innerHeight;
-      if (r.bottom <= 0 || r.top >= viewport) { syncVideos(false); return; }
-      var total = r.height - pin.offsetHeight, frame = pin.getBoundingClientRect();
+      var r = st.getBoundingClientRect(), total = st.offsetHeight - innerHeight;
+      if (r.bottom < -200 || r.top > innerHeight + 200) return;
       var p = Math.min(1, Math.max(0, -r.top / total)), f = Math.min(N - 1e-4, p * N), i = Math.floor(f), t = f - i;
       var a = i < N - 1 ? ease(Math.min(1, Math.max(0, (t - .42) / .58))) : 0;      // jak daleko wysunęła się następna warstwa
       figs.forEach(function (fg, k) {
@@ -118,94 +103,38 @@
       rod.style.height = ((1 - p) * 100) + '%';
       num.style.transform = 'translate3d(0,' + ((.5 - p) * 140).toFixed(1) + 'px,0)';
       setActive(a > .55 ? i + 1 : i);
-      syncVideos(frame.bottom > 0 && frame.top < viewport);
     }
     function ask() { if (!queued) { queued = true; requestAnimationFrame(upd); } }
     addEventListener('scroll', ask, { passive: true }); addEventListener('resize', ask); upd();
-    document.addEventListener('visibilitychange', function () { if (document.hidden) syncVideos(false); else ask(); });
   })();
 
-  var process = $('[data-proc]');
-  if (process && !light) {
-    var processObserver = new IntersectionObserver(function (es) {
-      if (!es[0].isIntersecting) return;
-      processObserver.disconnect();
-      import('./inwestor.js?v=3').catch(function () { /* Bez modułu zostaje lista kroków. */ });
-    }, { rootMargin: '900px 0px' });
-    processObserver.observe(process);
-  }
-
-  var replica = $('[data-replika]');
-  if (replica) {
-    var openModel = $('[data-replika-open]', replica), modelStatus = $('.replika3d__out', replica), modelCanvas = $('canvas', replica);
-    var modelParts = $$('[data-spot]', replica);
-    modelParts.forEach(function (button) {
-      button.addEventListener('click', function () {
-        modelParts.forEach(function (part) { part.setAttribute('aria-pressed', String(part === button)); });
-        modelStatus.textContent = button.dataset.txt;
-      });
-    });
-    function loadModel(focusCanvas) {
-      var focusWasOnButton = focusCanvas && document.activeElement === openModel;
-      openModel.disabled = true;
-      modelStatus.textContent = 'Wczytuję model 3D…';
-      import('./archeo3d.js?v=5').then(function (module) { return module.startReplica(); }).then(function () {
-        if (focusWasOnButton && (document.activeElement === openModel || document.activeElement === document.body)) modelCanvas.focus({ preventScroll: true });
-        openModel.hidden = true;
-        if (modelStatus.textContent === 'Wczytuję model 3D…') modelStatus.textContent = '';
-      }).catch(function () {
-        openModel.hidden = true;
-        modelStatus.textContent = 'Nie udało się wczytać modelu 3D. Możesz sprawdzić opisy części repliki.';
-      });
-    }
-    if (light) {
-      openModel.hidden = false;
-      openModel.addEventListener('click', function () { loadModel(true); });
-    } else {
-      var modelObserver = new IntersectionObserver(function (es) {
-        if (!es[0].isIntersecting) return;
-        modelObserver.disconnect();
-        loadModel(false);
-      }, { rootMargin: '200px 0px' });
-      modelObserver.observe(replica);
-    }
-  }
-
   var top = $('.top'), prog = $('.top__progress'), depth = $('.depth'), dm = $('.depth__m'), fill = $('.depth__fill'), eraEl = $('.depth__era');
-  var secs = $$('[data-depth]'), maxD = 4.2, endD = 0, curEra = '', sticky = $('.sticky-cta'), navLinks = $$('.top__nav a'), activeSection;
+  var secs = $$('[data-depth]'), maxD = 4.2, endD = 0, curEra = '', sticky = $('.sticky-cta'), navLinks = $$('.top__nav a');
   function onScroll() {
     var y = scrollY, h = document.documentElement.scrollHeight - innerHeight, mid = y + innerHeight * .5;
+    top.classList.toggle('is-small', y > 40);
+    prog.style.transform = 'scaleX(' + (h > 0 ? y / h : 0) + ')';
     var d = 0, era = secs[0].dataset.era, act = null;
     for (var i = 0; i < secs.length; i++) {
-      var s = secs[i], t = s.offsetTop;
-      if (mid < t) break;
-      var b = t + s.offsetHeight;
+      var s = secs[i], t = s.offsetTop, b = t + s.offsetHeight;
       if (mid >= t) { era = s.dataset.era; act = s;
         var nx = secs[i + 1], d0 = +s.dataset.depth, d1 = nx ? +nx.dataset.depth : endD;
         d = d0 + (d1 - d0) * Math.min(1, (mid - t) / Math.max(1, b - t)); }
     }
-    var bandRect = light || !band ? null : band.getBoundingClientRect(), hasDepthFill = fill.offsetParent;
-    top.classList.toggle('is-small', y > 40);
-    prog.style.transform = 'scaleX(' + (h > 0 ? y / h : 0) + ')';
-    var depthLabel = d.toFixed(1).replace('.', ',');
-    if (dm.textContent !== depthLabel) dm.textContent = depthLabel;
-    if (hasDepthFill) fill.style.height = (d / maxD * 100) + '%';
+    dm.textContent = d.toFixed(1).replace('.', ',');
+    fill.style.height = (d / maxD * 100) + '%';
     depth.classList.toggle('on', y > innerHeight * .35);
     if (era !== curEra) { curEra = era; eraEl.classList.add('swap'); setTimeout(function () { eraEl.textContent = curEra; eraEl.classList.remove('swap'); }, 220); }
     sticky.classList.toggle('on', y > innerHeight * .9 && (!act || act.id !== 'kontakt'));
-    if (act !== activeSection) {
-      activeSection = act;
-      var edu = act && (act.id === 'edukacja' || act.id === 'repliki');
-      sticky.textContent = edu ? 'Zamów zajęcia' : 'Zapytaj o nadzór';
-      sticky.setAttribute('href', edu ? '#kontakt' : '#kreator');
-      sticky.dataset.topic = edu ? 'Lekcje i warsztaty' : '';
-      navLinks.forEach(function (a) { a.classList.toggle('is-on', !!act && a.getAttribute('href') === '#' + act.id); });
-    }
-    if (bandRect && bandRect.bottom >= 0 && bandRect.top <= innerHeight) {
-      bandMedia.style.transform = 'translateY(' + ((bandRect.top + bandRect.height / 2 - innerHeight / 2) * -.12) + 'px)';
-    }
+    var edu = act && (act.id === 'edukacja' || act.id === 'repliki');
+    sticky.textContent = edu ? 'Zamów zajęcia' : 'Zapytaj o nadzór';
+    sticky.setAttribute('href', edu ? '#kontakt' : '#kreator');
+    sticky.dataset.topic = edu ? 'Lekcje i warsztaty' : '';
+    navLinks.forEach(function (a) { a.classList.toggle('is-on', !!act && a.getAttribute('href') === '#' + act.id); });
+    parallax();
   }
   var band = $('.band'), bandMedia = $('.band__media');
+  function parallax() { if (reduce || !band) return; var r = band.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return; bandMedia.style.transform = 'translateY(' + ((r.top + r.height / 2 - innerHeight / 2) * -.12) + 'px)'; }
   var ticking = false;
   addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(function () { ticking = false; onScroll(); }); } }, { passive: true });
   addEventListener('resize', onScroll); onScroll();
@@ -233,7 +162,7 @@
 
   /* ── pył w świetle (cała strona) ── */
   (function () {
-    var c = $('.dust'); if (!c || light) return; var x = c.getContext('2d'), W, H, P = [], dpr = Math.min(2, devicePixelRatio || 1), N = 46;
+    var c = $('.dust'); if (!c || reduce) return; var x = c.getContext('2d'), W, H, P = [], dpr = Math.min(2, devicePixelRatio || 1), N = innerWidth < 700 ? 22 : 46;
     function size() { W = innerWidth; H = innerHeight; c.width = W * dpr; c.height = H * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0); }
     size(); addEventListener('resize', size);
     for (var i = 0; i < N; i++) P.push({ x: Math.random() * W, y: Math.random() * H, r: .6 + Math.random() * 1.8, vx: (Math.random() - .5) * .15, vy: -.05 - Math.random() * .18, a: .15 + Math.random() * .35, t: Math.random() * 6 });
@@ -252,7 +181,7 @@
   /* ── hero: ziemia do odkopania ── */
   (function () {
     var hero = $('.hero'), c = $('.hero__soil'); if (!c) return;
-    if (light) { c.remove(); hero.classList.add('cleared'); return; }
+    if (reduce) { c.remove(); return; }
     var x = c.getContext('2d'), W, H, done = false, painted = 0;
     function soil() {
       var r = hero.getBoundingClientRect(); W = c.width = Math.round(r.width); H = c.height = Math.round(r.height);
@@ -333,7 +262,7 @@
   });
 
   /* ── mikroskop: przesuwanie powiększenia ── */
-  if (fine) $$('.scope__img').forEach(function (s) {
+  $$('.scope__img').forEach(function (s) {
     var img = $('img', s);
     s.addEventListener('pointermove', function (e) { var r = s.getBoundingClientRect(); img.style.transformOrigin = ((e.clientX - r.left) / r.width * 100) + '% ' + ((e.clientY - r.top) / r.height * 100) + '%'; img.style.transform = 'scale(2.4)'; });
     s.addEventListener('pointerleave', function () { img.style.transform = ''; img.style.transformOrigin = ''; });
@@ -341,7 +270,7 @@
 
   /* ── żar z ogniska w paśmie z namiotem ── */
   (function () {
-    var c = $('.band__embers'); if (!c || light) return; var x = c.getContext('2d'), W, H, P = [], on = false;
+    var c = $('.band__embers'); if (!c || reduce) return; var x = c.getContext('2d'), W, H, P = [], on = false;
     function size() { W = c.width = band.offsetWidth; H = c.height = band.offsetHeight; }
     size(); addEventListener('resize', size);
     new IntersectionObserver(function (e) { on = e[0].isIntersecting; if (on) requestAnimationFrame(tick); }).observe(band);
@@ -365,21 +294,20 @@
   /* ── przewijane paski galerii (same płyną, można przeciągać) ── */
   $$('[data-gallery]').forEach(function (tr) {
     var list = G[tr.dataset.gallery], strip = tr.parentNode;
-    list.concat(list).forEach(function (src, i) { var im = new Image(); im.loading = 'lazy'; im.decoding = 'async'; im.src = src; im.alt = 'Zdjęcie z galerii Archeoreplica'; im.draggable = false; im.dataset.i = i % list.length; tr.appendChild(im); });
-    var pos = 0, v = light ? 0 : -.35, drag = false, sx = 0, sp = 0, moved = 0, raf = 0;
-    function paint() { var half = tr.scrollWidth / 2; if (half) { if (pos < -half) pos += half; if (pos > 0) pos -= half; } tr.style.transform = 'translateX(' + pos + 'px)'; }
-    function loop() { if (!drag) { pos += v; paint(); } raf = requestAnimationFrame(loop); }
-    if (v) new IntersectionObserver(function (e) { cancelAnimationFrame(raf); if (e[0].isIntersecting) raf = requestAnimationFrame(loop); }).observe(strip);
+    list.concat(list).forEach(function (src, i) { var im = new Image(); im.src = src; im.alt = 'Zdjęcie z galerii Archeoreplica'; im.loading = 'lazy'; im.draggable = false; im.dataset.i = i % list.length; tr.appendChild(im); });
+    var pos = 0, v = reduce ? 0 : -.35, drag = false, sx = 0, sp = 0, moved = 0, vis = false;
+    new IntersectionObserver(function (e) { vis = e[0].isIntersecting; }).observe(strip);
+    function loop() { if (vis && !drag) pos += v; var half = tr.scrollWidth / 2; if (half) { if (pos < -half) pos += half; if (pos > 0) pos -= half; } tr.style.transform = 'translateX(' + pos + 'px)'; requestAnimationFrame(loop); }
+    requestAnimationFrame(loop);
     strip.addEventListener('pointerdown', function (e) { drag = true; moved = 0; sx = e.clientX; sp = pos; strip.classList.add('drag'); strip.setPointerCapture(e.pointerId); });
-    strip.addEventListener('pointermove', function (e) { if (!drag) return; moved = Math.abs(e.clientX - sx); pos = sp + (e.clientX - sx); paint(); });
+    strip.addEventListener('pointermove', function (e) { if (!drag) return; moved = Math.abs(e.clientX - sx); pos = sp + (e.clientX - sx); });
     strip.addEventListener('pointerup', function (e) { drag = false; strip.classList.remove('drag'); if (moved < 6) { var t = document.elementFromPoint(e.clientX, e.clientY); if (t && t.dataset.i) lbShow(list, +t.dataset.i); } });
-    strip.addEventListener('pointercancel', function () { drag = false; strip.classList.remove('drag'); });
   });
 
   /* ── mozaiki ── */
   function mosaic(box, list) {
     box.innerHTML = '';
-    list.forEach(function (src, i) { var f = document.createElement('figure'), im = new Image(); im.loading = 'lazy'; im.decoding = 'async'; im.src = src; im.alt = 'Zdjęcie z działalności Archeoreplica'; f.appendChild(im); f.style.transitionDelay = (i % 8) * 60 + 'ms'; f.onclick = function () { if (box._dragged) return; lbShow(list, i); }; box.appendChild(f); });
+    list.forEach(function (src, i) { var f = document.createElement('figure'), im = new Image(); im.src = src; im.alt = 'Zdjęcie z działalności Archeoreplica'; im.loading = 'lazy'; f.appendChild(im); f.style.transitionDelay = (i % 8) * 60 + 'ms'; f.onclick = function () { if (box._dragged) return; lbShow(list, i); }; box.appendChild(f); });
     box.scrollLeft = 0; carousel(box);
     watch(box);
   }

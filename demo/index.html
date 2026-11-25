@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Aleo:wght@400;600;700&family=Cabin:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/archeo.css?v=11">
+<link rel="stylesheet" href="assets/archeo.css?v=10">
 <link rel="icon" href="media/logo/favicon.svg" type="image/svg+xml">
 <script>
 // Odświeżenie strony głównej wraca do intra 3D (decyzja z 25.11.2026); wejście z intra ląduje od razu w treści.
@@ -108,7 +108,7 @@
   <div class="story__pin">
     <div class="story__num" aria-hidden="true"><b>2010</b><span>działamy od roku</span></div>
     <div class="story__media">
-      <figure><video muted loop playsinline preload="none" data-vsrc="media/video/archeolog.mp4"></video><img src="media/img/archeolog.webp" alt="Archeolog podczas nadzoru archeologicznego w wykopie, z łatą mierniczą" loading="lazy" decoding="async"></figure>
+      <figure><video muted loop playsinline preload="none" data-vsrc="media/video/archeolog.mp4"></video><img src="media/img/archeolog.webp" alt="Archeolog podczas nadzoru archeologicznego w wykopie, z łatą mierniczą"></figure>
       <figure><img src="media/img/hero2.webp" alt="Wykop archeologiczny w centrum miasta, odsłonięte ceglane piwnice" loading="lazy"></figure>
       <figure><img src="media/img/lab.webp" alt="Analiza zabytku pod mikroskopem w pracowni" loading="lazy"></figure>
       <figure><video muted loop playsinline preload="none" data-vsrc="media/video/siekiera.mp4"></video><img src="media/img/g31-63.webp" alt="Eksperyment: praca repliką dawnego narzędzia" loading="lazy"></figure>
@@ -193,10 +193,10 @@
           <span class="proc__note">Zdjęcia poglądowe</span>
         </div>
         <ol class="steps proc__steps">
-          <li><span class="steps__n">1</span><h3>Analiza działki</h3><p>Zanim ruszy budowa, sprawdzamy ewidencję, mapy, dane archiwalne i decyzje administracyjne. Wiesz, czy i w jakim zakresie potrzebny będzie nadzór archeologiczny.</p><img class="proc__photo" src="media/proces/1-analiza.jpg" alt="" loading="lazy" decoding="async"></li>
-          <li><span class="steps__n">2</span><h3>Wniosek do konserwatora</h3><p>Przygotowujemy wniosek i uzgodnienia konserwatorskie. Odciążamy inwestora w formalnościach związanych z uzyskaniem pozwolenia.</p><img class="proc__photo" src="media/proces/2-wniosek.jpg" alt="" loading="lazy" decoding="async"></li>
-          <li><span class="steps__n">3</span><h3>Nadzór archeologiczny</h3><p>Archeolog jest przy robotach ziemnych. Obserwuje warstwy w profilu i rzucie wykopu, a odkrycia dokumentuje opisowo i fotograficznie.</p><img class="proc__photo" src="media/proces/3-nadzor.jpg" alt="" loading="lazy" decoding="async"></li>
-          <li><span class="steps__n">4</span><h3>Raport z nadzoru</h3><p>Opracowujemy materiały, przygotowujemy raport i zajmujemy się konserwacją zabytków.</p><img class="proc__photo" src="media/proces/4-raport.jpg" alt="" loading="lazy" decoding="async"></li>
+          <li><span class="steps__n">1</span><h3>Analiza działki</h3><p>Zanim ruszy budowa, sprawdzamy ewidencję, mapy, dane archiwalne i decyzje administracyjne. Wiesz, czy i w jakim zakresie potrzebny będzie nadzór archeologiczny.</p></li>
+          <li><span class="steps__n">2</span><h3>Wniosek do konserwatora</h3><p>Przygotowujemy wniosek i uzgodnienia konserwatorskie. Odciążamy inwestora w formalnościach związanych z uzyskaniem pozwolenia.</p></li>
+          <li><span class="steps__n">3</span><h3>Nadzór archeologiczny</h3><p>Archeolog jest przy robotach ziemnych. Obserwuje warstwy w profilu i rzucie wykopu, a odkrycia dokumentuje opisowo i fotograficznie.</p></li>
+          <li><span class="steps__n">4</span><h3>Raport z nadzoru</h3><p>Opracowujemy materiały, przygotowujemy raport i zajmujemy się konserwacją zabytków.</p></li>
         </ol>
       </div>
     </div>
@@ -269,7 +269,6 @@
     <p class="lead reveal">Wszystkie repliki wykonujemy własnoręcznie, narzędziami i technikami z danej epoki — od epoki kamienia po czasy nowożytne. Sprawdź, czy rozpoznasz je bez podpisu.</p>
     <div class="replika3d reveal" data-replika>
       <div class="replika3d__stage">
-        <img class="replika3d__poster" src="media/img/model-poroza.webp" alt="Podgląd modelu narzędzia z poroża" loading="lazy" decoding="async">
         <canvas tabindex="0" aria-label="Model 3D repliki narzędzia z poroża. Strzałki w lewo i w prawo obracają model."></canvas>
         <button class="replika3d__dot" type="button" data-spot-dot="otwor" aria-label="Pokaż otwór na trzonek"></button>
         <button class="replika3d__dot" type="button" data-spot-dot="ostrze" aria-label="Pokaż krzemienne ostrze"></button>
@@ -279,7 +278,6 @@
       <div class="replika3d__txt">
         <h3>Narzędzie z poroża z krzemiennym ostrzem</h3>
         <p>Obróć replikę i zobacz z bliska, jak jest zbudowana.</p>
-        <button class="btn btn--dark" type="button" data-replika-open hidden>Uruchom model 3D</button>
         <ul>
           <li><button type="button" data-spot="otwor" aria-pressed="false" data-txt="Otwór wywiercony na wylot. W niego wchodzi drewniany trzonek.">Otwór na trzonek</button></li>
           <li><button type="button" data-spot="ostrze" aria-pressed="false" data-txt="Krzemienne ostrze osadzone w jednym z ramion poroża.">Krzemienne ostrze</button></li>
@@ -382,6 +380,8 @@
   <button class="lb__n" aria-label="Następne">›</button>
 </div>
 
-<script src="assets/archeo.js?v=8" defer></script>
+<script src="assets/archeo.js?v=7" defer></script>
+<script type="module" src="assets/archeo3d.js?v=4"></script>
+<script type="module" src="assets/inwestor.js?v=2"></script>
 </body>
 </html>
